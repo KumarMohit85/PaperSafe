@@ -1,8 +1,8 @@
-import 'package:_first_one/add_documents.dart';
-import 'package:_first_one/categories.dart';
-import 'package:_first_one/favourites.dart';
-import 'package:_first_one/settings.dart';
-import 'package:_first_one/your_documents.dart';
+import 'package:_first_one/views/add_documents.dart';
+import 'package:_first_one/views/categories.dart';
+import 'package:_first_one/views/favourites.dart';
+import 'package:_first_one/views/settings.dart';
+import 'package:_first_one/views/your_documents.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {

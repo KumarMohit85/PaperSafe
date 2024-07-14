@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:_first_one/add_documents.dart';
+import 'package:_first_one/views/add_documents.dart';
 import 'package:_first_one/api_services/api_services.dart';
 import 'package:_first_one/models/extrac_images.dart';
 import 'package:_first_one/models/image_model.dart';
 import 'package:_first_one/models/user.dart';
 import 'package:_first_one/models/user_manager.dart';
-import 'package:_first_one/your_documents.dart';
+import 'package:_first_one/views/your_documents.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';

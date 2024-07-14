@@ -1,28 +1,20 @@
 import 'dart:async';
-
-import 'package:_first_one/add_document.dart';
-import 'package:_first_one/add_documents.dart';
-
 import 'package:_first_one/api_services/api_services.dart';
 import 'package:_first_one/constants/colorManager.dart';
-import 'package:_first_one/document_button.dart';
-import 'package:_first_one/document_selector.dart';
-import 'package:_first_one/login_signup.dart';
+import 'package:_first_one/Widgets/document_button.dart';
+import 'package:_first_one/Widgets/document_selector.dart';
+import 'package:_first_one/views/login_signup.dart';
 import 'package:_first_one/models/aadhar_frame.dart';
 import 'package:_first_one/models/documents_manager.dart';
 import 'package:_first_one/models/image_model.dart';
 import 'package:_first_one/models/pan_frame.dart';
 import 'package:_first_one/models/user.dart';
 import 'package:_first_one/models/user_manager.dart';
-import 'package:_first_one/share_button.dart';
-import 'package:_first_one/view_documents.dart';
+import 'package:_first_one/Widgets/share_button.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
 
 enum CardType { pan, aadhaar }
 
@@ -37,7 +29,7 @@ class _YourDocumentsState extends State<YourDocuments> {
   // List<ImageModel?> list = DocumentManager().allImages;
   User? _currentUser;
 
-  ApiService _apiService = ApiService();
+  final ApiService _apiService = ApiService();
   String? dropdownValue;
   bool _enableEditing = false;
   DateTime? selectedDate = DateTime.now();
@@ -70,18 +62,18 @@ class _YourDocumentsState extends State<YourDocuments> {
   }
 
   Future<void> selectDate() async {
-    DateTime? _selected = await showDatePicker(
+    DateTime? selected = await showDatePicker(
       context: context,
       firstDate: DateTime(1900),
       lastDate: DateTime(DateTime.now().year + 1),
       initialDate: DateTime.now(),
     );
-    if (_selected != null) {
+    if (selected != null) {
       setState(() {
-        selectedDate = _selected;
-        _date.text = _selected.day.toString();
-        _month.text = _selected.month.toString();
-        _year.text = _selected.year.toString();
+        selectedDate = selected;
+        _date.text = selected.day.toString();
+        _month.text = selected.month.toString();
+        _year.text = selected.year.toString();
       });
     }
   }
@@ -128,7 +120,7 @@ class _YourDocumentsState extends State<YourDocuments> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       CupertinoIcons.back,
                       weight: 10,
                       size: 30,
@@ -137,7 +129,7 @@ class _YourDocumentsState extends State<YourDocuments> {
                       Navigator.pop(context);
                     },
                   ),
-                  Text(
+                  const Text(
                     "Your Profile",
                     style: TextStyle(
                       fontSize: 30,
@@ -192,11 +184,11 @@ class _YourDocumentsState extends State<YourDocuments> {
                           ? Colors.deepPurple[700]
                           : Colors.grey[700],
                     ),
-                    decoration: InputDecoration(border: InputBorder.none),
+                    decoration: const InputDecoration(border: InputBorder.none),
                   ),
                 ),
               ),
-              Align(
+              const Align(
                 alignment: Alignment.topLeft,
                 child: Text("First Name"),
               ),
@@ -221,11 +213,11 @@ class _YourDocumentsState extends State<YourDocuments> {
                           ? Colors.deepPurple[700]
                           : Colors.grey[700],
                     ),
-                    decoration: InputDecoration(border: InputBorder.none),
+                    decoration: const InputDecoration(border: InputBorder.none),
                   ),
                 ),
               ),
-              Align(
+              const Align(
                 alignment: Alignment.topLeft,
                 child: Text("Last Name"),
               ),
@@ -251,13 +243,13 @@ class _YourDocumentsState extends State<YourDocuments> {
                           ? Colors.deepPurple[700]
                           : Colors.grey[700],
                     ),
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: InputBorder.none,
                     ),
                   ),
                 ),
               ),
-              Align(
+              const Align(
                 alignment: Alignment.topLeft,
                 child: Text("Your Phone No"),
               ),
@@ -283,13 +275,13 @@ class _YourDocumentsState extends State<YourDocuments> {
                           ? Colors.deepPurple[700]
                           : Colors.grey[700],
                     ),
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: InputBorder.none,
                     ),
                   ),
                 ),
               ),
-              Align(
+              const Align(
                 alignment: Alignment.topLeft,
                 child: Text("Your Email address"),
               ),
@@ -392,13 +384,13 @@ class _YourDocumentsState extends State<YourDocuments> {
                       Icons.calendar_month,
                       size: 30.sp,
                       color: _enableEditing
-                          ? Color.fromARGB(255, 169, 15, 230)
+                          ? const Color.fromARGB(255, 169, 15, 230)
                           : Colors.grey[700],
                     ),
                   ),
                 ],
               ),
-              Align(
+              const Align(
                 alignment: Alignment.topLeft,
                 child: Text("Your Date of Birth"),
               ),
@@ -436,7 +428,7 @@ class _YourDocumentsState extends State<YourDocuments> {
                           decoration: BoxDecoration(
                               color: _selectedGender == gender
                                   ? _enableEditing
-                                      ? Color.fromARGB(255, 219, 102, 239)
+                                      ? const Color.fromARGB(255, 219, 102, 239)
                                       : Colors.grey
                                   : Colors.grey[200],
                               borderRadius: BorderRadius.circular(60.r)),
@@ -481,7 +473,7 @@ class _YourDocumentsState extends State<YourDocuments> {
                       _enableEditing = false;
                     });
                   },
-                  child: Text(
+                  child: const Text(
                     "Update",
                     style: TextStyle(
                         fontWeight: FontWeight.w600, color: Colors.deepPurple),
@@ -492,7 +484,6 @@ class _YourDocumentsState extends State<YourDocuments> {
               Center(
                 child: InkWell(
                   onTap: () {
-                    print("logout tapped");
                     UserManager userManager = UserManager();
                     userManager.clearUser();
                     // updateUser();
@@ -514,6 +505,7 @@ class _YourDocumentsState extends State<YourDocuments> {
                 child: InkWell(
                   onTap: () async {
                     await _apiService.deleteUser(_currentUser!.id!, context);
+                    // ignore: use_build_context_synchronously
                     _restartApp(context);
                   },
                   child: Text(
@@ -536,7 +528,7 @@ class _YourDocumentsState extends State<YourDocuments> {
   void _restartApp(BuildContext context) {
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
       (Route<dynamic> route) => false,
     );
   }
@@ -547,13 +539,13 @@ class _YourDocumentsState extends State<YourDocuments> {
       child: AadharFrame().isAadharAvailable()
           ? AadharFrame().getAadharCardLayout()
           : Card(
-              child: Container(
+              child: SizedBox(
                 height: 200.h,
                 width: 340.w,
                 child: Center(
                   child: Column(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 80,
                       ),
                       InkWell(
@@ -586,13 +578,13 @@ class _YourDocumentsState extends State<YourDocuments> {
       child: PanFrame().isPanAvailable()
           ? PanFrame().getPanCardLayout()
           : Card(
-              child: Container(
+              child: SizedBox(
                 height: 200.h,
                 width: 340.w,
                 child: Center(
                   child: Column(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 80,
                       ),
                       InkWell(
@@ -632,7 +624,7 @@ class _YourDocumentsState extends State<YourDocuments> {
         child: Center(
           child: Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
             ),
@@ -644,7 +636,6 @@ class _YourDocumentsState extends State<YourDocuments> {
 
   //body for yourDocuments
   Widget _getYourDocuments() {
-    List<ImageModel?> list = DocumentManager().allImages;
     return Container(
         margin: EdgeInsets.fromLTRB(25.w, 20.h, 25.w, 20.h),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -708,7 +699,7 @@ class _YourDocumentsState extends State<YourDocuments> {
                       options: CarouselOptions(
                         height: 100.h,
                         autoPlay: true,
-                        autoPlayInterval: Duration(milliseconds: 2000),
+                        autoPlayInterval: const Duration(milliseconds: 2000),
                         viewportFraction: 1.sp,
                         pauseAutoPlayOnTouch: true,
                       ),
@@ -767,12 +758,12 @@ class _YourDocumentsState extends State<YourDocuments> {
   }
 
   void addFrame(CardType cardType) {
-    TextEditingController _number = TextEditingController();
+    TextEditingController number = TextEditingController();
     showModalBottomSheet(
         context: context,
         builder: (context) {
           return SingleChildScrollView(
-              child: Container(
+              child: SizedBox(
             height: 500,
             child: Column(
               children: [
@@ -789,9 +780,9 @@ class _YourDocumentsState extends State<YourDocuments> {
                     padding:
                         EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
                     child: TextField(
-                      controller: _number,
+                      controller: number,
                       style: TextStyle(fontSize: 18.sp, letterSpacing: 1.5.w),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
                       ),
                     ),
@@ -809,7 +800,7 @@ class _YourDocumentsState extends State<YourDocuments> {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      setDetails(cardType, _number.text);
+                      setDetails(cardType, number.text);
                     },
                     child: Text("save ${getCardType(cardType)} details"))
               ],
@@ -833,7 +824,7 @@ class _YourDocumentsState extends State<YourDocuments> {
       case CardType.pan:
         PanFrame().setDetails(
             number,
-            _currentUser!.firstName + " " + _currentUser!.lastName,
+            "${_currentUser!.firstName} ${_currentUser!.lastName}",
             DateTime.now());
       case CardType.aadhaar:
         AadharFrame().setDetails(number,
@@ -861,7 +852,7 @@ class _YourDocumentsState extends State<YourDocuments> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 CupertinoIcons.back,
                                 weight: 10,
                                 size: 30,
@@ -895,10 +886,10 @@ class _YourDocumentsState extends State<YourDocuments> {
       height: 120.h,
       width: 120.h,
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 227, 130, 244),
+        color: const Color.fromARGB(255, 227, 130, 244),
         borderRadius: BorderRadius.circular(30.r),
-        border:
-            Border.all(width: 2.5.sp, color: Color.fromARGB(255, 113, 8, 122)),
+        border: Border.all(
+            width: 2.5.sp, color: const Color.fromARGB(255, 113, 8, 122)),
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 10.h),
@@ -923,46 +914,6 @@ class _YourDocumentsState extends State<YourDocuments> {
     );
   }
 
-  Widget _getCustomButton(String image, String text, VoidCallback func) {
-    return InkWell(
-      // onTap: () {
-      //   _askSource(doc);
-      // },
-      onTap: func,
-      child: Container(
-        height: 45.h,
-        width: double.infinity,
-        decoration: BoxDecoration(
-            color: Color.fromARGB(255, 227, 130, 244),
-            borderRadius: BorderRadius.circular(30.r),
-            border: Border.all(
-                width: 2.5.sp, color: Color.fromARGB(255, 113, 8, 122))),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0.h, vertical: 4.h),
-          child: Row(
-            children: [
-              Image.asset(
-                image,
-                height: 23.h,
-                width: 40.h,
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              Text(
-                text,
-                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w500),
-              ),
-              SizedBox(
-                height: 30.w,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   void _askFrame() {
     showDialog(
       context: context,
@@ -970,7 +921,7 @@ class _YourDocumentsState extends State<YourDocuments> {
         return SizedBox(
           height: 100.h,
           child: AlertDialog(
-            title: Text(
+            title: const Text(
               'Select Card you want to add',
               style: TextStyle(fontSize: 16),
             ),
@@ -1012,7 +963,7 @@ class _YourDocumentsState extends State<YourDocuments> {
                 ),
               ),
             ],
-            actionsPadding: EdgeInsets.all(8.0),
+            actionsPadding: const EdgeInsets.all(8.0),
           ),
         );
       },
@@ -1024,10 +975,10 @@ class _YourDocumentsState extends State<YourDocuments> {
       height: 30.h,
       width: 85.w,
       decoration: BoxDecoration(
-          color: Color.fromARGB(255, 227, 130, 244),
+          color: const Color.fromARGB(255, 227, 130, 244),
           borderRadius: BorderRadius.circular(30.r),
           border: Border.all(
-              width: 2.5.sp, color: Color.fromARGB(255, 113, 8, 122))),
+              width: 2.5.sp, color: const Color.fromARGB(255, 113, 8, 122))),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.0.h, vertical: 4.h),
         child: Row(

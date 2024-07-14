@@ -1,5 +1,5 @@
 import 'package:_first_one/api_services/api_services.dart';
-import 'package:_first_one/mobile_otp.dart';
+import 'package:_first_one/views/mobile_otp.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

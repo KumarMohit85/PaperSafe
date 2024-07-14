@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:_first_one/homepage.dart';
+import 'package:_first_one/views/homepage.dart';
 import 'package:_first_one/models/user.dart';
 import 'package:_first_one/models/user_manager.dart';
-import 'package:_first_one/tell_more.dart';
+import 'package:_first_one/views/tell_more.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';

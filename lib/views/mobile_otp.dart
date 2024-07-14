@@ -1,6 +1,6 @@
 import 'package:_first_one/api_services/api_services.dart';
-import 'package:_first_one/login_signup.dart';
-import 'package:_first_one/tell_more.dart';
+import 'package:_first_one/views/login_signup.dart';
+import 'package:_first_one/views/tell_more.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';

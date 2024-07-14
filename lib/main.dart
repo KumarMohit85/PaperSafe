@@ -1,5 +1,5 @@
-import 'package:_first_one/homepage.dart';
-import 'package:_first_one/login_signup.dart';
+import 'package:_first_one/views/homepage.dart';
+import 'package:_first_one/views/login_signup.dart';
 import 'package:_first_one/models/aadhar_frame.dart';
 import 'package:_first_one/models/app_preferences.dart';
 import 'package:_first_one/models/documents_manager.dart';

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:_first_one/add_document.dart';
+import 'package:_first_one/views/add_document.dart';
 import 'package:_first_one/api_services/api_services.dart';
-import 'package:_first_one/homepage.dart';
+import 'package:_first_one/views/homepage.dart';
 import 'package:_first_one/models/user.dart';
 import 'package:_first_one/models/user_manager.dart';
 import 'package:flutter/material.dart';
