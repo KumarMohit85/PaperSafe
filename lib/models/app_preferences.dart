@@ -36,6 +36,6 @@ class AppPreferences {
 
   Future<void> removeUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove("user");
+    await prefs.clear();
   }
 }

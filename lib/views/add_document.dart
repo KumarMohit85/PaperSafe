@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:_first_one/add_documents.dart';
+import 'package:_first_one/views/add_documents.dart';
 import 'package:_first_one/api_services/api_services.dart';
 import 'package:_first_one/models/documents_manager.dart';
 import 'package:flutter/cupertino.dart';

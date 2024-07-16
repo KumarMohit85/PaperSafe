@@ -1,5 +1,5 @@
 import 'package:_first_one/models/documents_manager.dart';
-import 'package:_first_one/view_documents.dart';
+import 'package:_first_one/views/view_documents.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

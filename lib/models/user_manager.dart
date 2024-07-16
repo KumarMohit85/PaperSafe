@@ -37,7 +37,7 @@ class UserManager {
     AppPreferences appPreferences = AppPreferences();
     await appPreferences.removeUser();
     print("clear user called");
-    refreshUser();
+    await refreshUser();
   }
 
   Future<void> refreshUser() async {

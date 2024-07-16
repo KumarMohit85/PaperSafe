@@ -194,6 +194,16 @@ class _LoginPageState extends State<LoginPage> {
       var _isValid = _formKey.currentState?.validate();
       if (_isValid ?? false) {
         bool success = await _fetchOTP();
+        if (success) {
+          _goNext(emailID);
+        } else {
+          // Restart the same page
+          Navigator.of(context).pop();
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+                LoginPage(), // Replace 'YourPage' with the actual name of your page
+          ));
+        }
         success ? _goNext(emailID) : null;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
