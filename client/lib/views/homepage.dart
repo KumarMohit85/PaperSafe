@@ -1,3 +1,26 @@
+// Resolved imports
+import 'package:flutter/material.dart';
+import 'package:papersafe/core/widgets/glassmorphism.dart';
+import 'package:papersafe/widgets/document_card.dart';
+import 'package:papersafe/core/theme/app_colors.dart';
+import 'package:papersafe/core/theme/app_theme.dart';
+import 'package:papersafe/views/login_signup.dart';
+import 'package:papersafe/views/mobile_otp.dart';
+import 'package:papersafe/views/tell_more.dart';
+import 'package:papersafe/views/scanner_page.dart';
+import 'package:papersafe/views/ai_assistant_page.dart';
+import 'package:papersafe/views/qr_scanner_page.dart';
+import 'package:papersafe/views/qr_generator_page.dart';
+import 'package:papersafe/views/nearby_sharing_page.dart';
+import 'package:papersafe/core/router/app_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+=======
+import 'package:papersafe/views/add_documents.dart';
+import 'package:papersafe/views/categories.dart';
+import 'package:papersafe/views/favourites.dart';
+import 'package:papersafe/views/settings.dart';
+import 'package:papersafe/views/your_documents.dart';
+>>>>>>> af38e11f220c7ca78ed7a1ca18db4fe4150913d1
 import 'package:flutter/material.dart';
 import 'package:papersafe/core/widgets/glassmorphism.dart';
 import 'package:papersafe/widgets/document_card.dart';
