@@ -56,6 +56,18 @@ class SecureStorageService {
     ]);
   }
 
+  // ─── Biometric Settings ───────────────────────────────────────────────────
+  static const _keyBiometricEnabled = 'ps_biometric_enabled';
+
+  static Future<void> setBiometricEnabled(bool enabled) async {
+    await _storage.write(key: _keyBiometricEnabled, value: enabled.toString());
+  }
+
+  static Future<bool> getBiometricEnabled() async {
+    final value = await _storage.read(key: _keyBiometricEnabled);
+    return value == 'true';
+  }
+
   // ─── Clear all ────────────────────────────────────────────────────────────
   static Future<void> clearAll() async {
     await _storage.deleteAll();
