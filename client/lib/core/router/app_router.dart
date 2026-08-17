@@ -14,6 +14,7 @@ import 'package:papersafe/views/qr_scanner_page.dart';
 import 'package:papersafe/views/qr_generator_page.dart';
 import 'package:papersafe/views/nearby_sharing_page.dart';
 
+import 'package:papersafe/views/search_page.dart';
 import 'package:papersafe/core/providers/biometric_provider.dart';
 import 'package:papersafe/views/biometric_lock_screen.dart';
 
@@ -115,7 +116,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.search,
             name: 'search',
-            builder: (context, state) => const Placeholder(),
+            builder: (context, state) => const SearchPage(),
           ),
           GoRoute(
             path: AppRoutes.settings,
