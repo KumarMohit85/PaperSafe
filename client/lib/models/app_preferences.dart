@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:_first_one/models/user.dart';
+import 'package:papersafe/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppPreferences {

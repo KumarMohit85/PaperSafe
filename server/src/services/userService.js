@@ -41,24 +41,28 @@ class UserService{
     }
 
     async verifyOTP(emailID, otp){
-
         try {
             if(validateOTP(emailID, otp)){
 
                 const user = await this.getUserByEmail(emailID);
     
                 if(user){
-    
+                    const { generateTokens } = require('../utils/helper/jwtHelper');
+                    const { accessToken, refreshToken } = generateTokens(user);
+
                     return {
                         doExist: true,
-                        user: user
+                        user: user,
+                        accessToken,
+                        refreshToken,
                     };
     
                 }else{
-    
                     return {
                         doExist: false,
-                        user: {}
+                        user: {},
+                        accessToken: null,
+                        refreshToken: null,
                     };
                 }
     
@@ -69,8 +73,6 @@ class UserService{
             console.log('Error in User Service');
             throw error;
         }
-
-        
     }
 
 
@@ -110,6 +112,20 @@ class UserService{
             return response;
         } catch (error) {
             console.log("Error in User Service Layer");
+            throw error;
+        }
+    }
+
+    async refreshAccessToken(refreshToken) {
+        try {
+            const { verifyRefreshToken, generateTokens } = require('../utils/helper/jwtHelper');
+            const decoded = verifyRefreshToken(refreshToken);
+            const user = await this.getUserById(decoded.id);
+            if (!user) throw new Error('User not found');
+            const tokens = generateTokens(user);
+            return tokens;
+        } catch (error) {
+            console.log("Error in User Service Layer - refreshAccessToken");
             throw error;
         }
     }

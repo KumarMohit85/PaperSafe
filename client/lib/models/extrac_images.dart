@@ -1,7 +1,6 @@
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:_first_one/api_services/api_services.dart';
+import 'package:papersafe/api_services/api_services.dart';
 import 'package:archive/archive_io.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -10,7 +9,7 @@ class getImagesfromZip {
 
   Future<List<File>?> downloadAndShowImages(String userId) async {
     try {
-      final zipFile = await _apiService.downloadZipFile(userId);
+      final zipFile = await _apiService.downloadMovieTicketZip(userId);
       if (zipFile != null) {
         final images = await extractZipFile(zipFile);
         return images;

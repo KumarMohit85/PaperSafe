@@ -1,78 +1,72 @@
-import 'package:_first_one/views/homepage.dart';
-import 'package:_first_one/views/login_signup.dart';
-import 'package:_first_one/models/aadhar_frame.dart';
-import 'package:_first_one/models/documents_manager.dart';
-import 'package:_first_one/models/pan_frame.dart';
-import 'package:_first_one/models/user_manager.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:papersafe/core/router/app_router.dart';
+import 'package:papersafe/core/theme/app_theme.dart';
+import 'package:papersafe/core/theme/theme_provider.dart';
+
+// Legacy singletons – still needed until Phase 1-A migration completes
+import 'package:papersafe/models/aadhar_frame.dart';
+import 'package:papersafe/models/documents_manager.dart';
+import 'package:papersafe/models/pan_frame.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  UserManager.instance.refreshUser(); // Load user details first
-  AadharFrame aadharFrame = AadharFrame();
+
+  // Fix status bar style globally
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarBrightness: Brightness.dark,
+    statusBarIconBrightness: Brightness.light,
+  ));
+
+  // Lock orientation to portrait
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  // Pre-load document frames (legacy – kept for backward compat)
+  final aadharFrame = AadharFrame();
   await aadharFrame.loadDetails();
 
-  PanFrame panFrame = PanFrame();
+  final panFrame = PanFrame();
   await panFrame.loadDetails();
-  DocumentManager()
-      .initialize(); // Set up the document manager to listen for user changes
-  runApp(const MyApp());
+
+  DocumentManager().initialize();
+
+  runApp(
+    // ProviderScope is required by Riverpod
+    const ProviderScope(
+      child: PaperSafeApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class PaperSafeApp extends ConsumerWidget {
+  const PaperSafeApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarColor: Colors.white,
-    ));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark  = ref.watch(themeModeProvider);
+    final router  = ref.watch(appRouterProvider);
 
     return ScreenUtilInit(
-      designSize: const Size(360, 690),
+      designSize: const Size(390, 844), // iPhone 14 Pro baseline
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (_, child) {
-        return MaterialApp(
+      builder: (_, __) {
+        return MaterialApp.router(
+          title: 'PaperSafe',
           debugShowCheckedModeBanner: false,
-          title: 'First Method',
-          home: FutureBuilder<bool>(
-            future: getIsLogin(),
-            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                );
-              } else if (snapshot.hasError) {
-                return Scaffold(
-                  body: Center(child: Text('Error: ${snapshot.error}')),
-                );
-              } else {
-                bool isLoggedIn = snapshot.data ?? false;
-                return isLoggedIn ? HomePage() : LoginPage();
-              }
-            },
-          ),
+          theme:      AppTheme.light,
+          darkTheme:  AppTheme.dark,
+          themeMode:  isDark ? ThemeMode.dark : ThemeMode.light,
+          routerConfig: router,
         );
       },
     );
-  }
-
-  Future<bool> getIsLogin() async {
-    UserManager _userManager = UserManager();
-    _userManager.refreshUser();
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    print(prefs.getString("user"));
-    if (prefs.getString("user") != null)
-      return true;
-    else
-      return false;
   }
 }

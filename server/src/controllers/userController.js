@@ -71,6 +71,35 @@ const otpVerification = async(req, res)=>{
     }
 }
 
+const refreshToken = async(req, res) => {
+    try {
+        const { refreshToken } = req.body;
+        if (!refreshToken) {
+            return res.status(400).json({
+                data: {},
+                error: 'Refresh token required',
+                success: false,
+                message: 'No refresh token provided',
+            });
+        }
+        const tokens = await userService.refreshAccessToken(refreshToken);
+        return res.status(200).json({
+            data: tokens,
+            error: {},
+            success: true,
+            message: 'Tokens refreshed',
+        });
+    } catch (error) {
+        console.log("Error in User Controller Layer - refreshToken");
+        return res.status(401).json({
+            data: {},
+            error: error.message,
+            success: false,
+            message: 'Failed to refresh token',
+        });
+    }
+}
+
 const updateUserInfo = async(req, res) => {
     try {
         const id = req.params.id;
@@ -120,6 +149,7 @@ module.exports = {
     userRegistration,
     otpRequest,
     otpVerification,
+    refreshToken,
     updateUserInfo,
     deleteUser
 }

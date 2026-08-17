@@ -1,3 +1,4 @@
 module.exports = {
-    upload: require('./uploadMiddleware')
-}
+    upload: require('./uploadMiddleware'),
+    authMiddleware: require('./authMiddleware'),
+}
