@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:_first_one/models/app_preferences.dart';
-import 'package:_first_one/models/user.dart';
+import 'package:papersafe/models/app_preferences.dart';
+import 'package:papersafe/models/user.dart';
 
 class UserManager {
   User? _user;

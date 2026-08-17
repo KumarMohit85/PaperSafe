@@ -1,5 +1,5 @@
-import 'package:_first_one/views/delete_documents.dart';
-import 'package:_first_one/views/terms_n_conditions.dart';
+import 'package:papersafe/views/delete_documents.dart';
+import 'package:papersafe/views/terms_n_conditions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

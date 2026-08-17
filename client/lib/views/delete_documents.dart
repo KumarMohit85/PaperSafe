@@ -1,5 +1,5 @@
-import 'package:_first_one/models/documents_manager.dart';
-import 'package:_first_one/models/image_model.dart';
+import 'package:papersafe/models/documents_manager.dart';
+import 'package:papersafe/models/image_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -11,5 +11,9 @@ module.exports = {
     ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
     IV: process.env.IV,
     EMAIL_ID: process.env.EMAIL_ID,
-    EMAIL_PASSKEY: process.env.EMAIL_PASSKEY
+    EMAIL_PASSKEY: process.env.EMAIL_PASSKEY,
+    JWT_SECRET: process.env.JWT_SECRET || 'papersafe_jwt_secret_change_in_prod',
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'papersafe_refresh_secret_change_in_prod',
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
+    JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
 }

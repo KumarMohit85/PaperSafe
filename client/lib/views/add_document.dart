@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:_first_one/views/add_documents.dart';
-import 'package:_first_one/api_services/api_services.dart';
-import 'package:_first_one/models/documents_manager.dart';
+import 'package:papersafe/views/add_documents.dart';
+import 'package:papersafe/api_services/api_services.dart';
+import 'package:papersafe/models/documents_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -186,11 +186,11 @@ class _AddDocumentState extends State<AddDocument> {
       File imageFile, documentType doc, String userId, String number) async {
     switch (doc) {
       case documentType.Aadhaar:
-        await _apiService.uploadAadhar(userId, imageFile, context, number);
+        await _apiService.uploadAadhar(userId, imageFile, number, context);
         DocumentManager().refreshDocuments(documentType.Aadhaar);
         break;
       case documentType.PAN:
-        await _apiService.uploadPan(userId, imageFile, context, number);
+        await _apiService.uploadPan(userId, imageFile, number, context);
         DocumentManager().refreshDocuments(documentType.PAN);
         break;
       case documentType.XMarkSheet:

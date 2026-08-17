@@ -1,6 +1,6 @@
-import 'package:_first_one/api_services/api_services.dart';
-import 'package:_first_one/views/homepage.dart';
-import 'package:_first_one/models/user.dart';
+import 'package:papersafe/api_services/api_services.dart';
+import 'package:papersafe/views/homepage.dart';
+import 'package:papersafe/models/user.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -304,13 +304,13 @@ class _UserInformationState extends State<UserInformation> {
                   ApiService _apiService = ApiService();
 
                   _apiService.postNewUser(
-                    _firstName.text,
-                    _lastName.text,
-                    _mobileNo.text,
-                    genderToString(_selectedGender),
-                    widget.email,
-                    selectedDate!.toIso8601String(),
-                    context,
+                    firstName: _firstName.text,
+                    lastName: _lastName.text,
+                    mobNo: _mobileNo.text,
+                    gender: genderToString(_selectedGender),
+                    emailId: widget.email,
+                    dob: selectedDate!.toIso8601String(),
+                    context: context,
                   );
                 },
                 child: Ink(

@@ -1,178 +1,165 @@
-import 'package:_first_one/api_services/api_services.dart';
-import 'package:_first_one/views/login_signup.dart';
-import 'package:_first_one/views/tell_more.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:papersafe/api_services/api_services.dart';
+import 'package:papersafe/core/providers/auth_provider.dart';
+import 'package:papersafe/core/router/app_router.dart';
+import 'package:papersafe/models/user.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:pinput/pinput.dart';
 
-class OtpVerification extends StatefulWidget {
-  OtpVerification({super.key, required this.emailID});
-  String emailID;
+/// GoRouter-compatible alias for the OTP screen.
+class MobileOtpPage extends StatelessWidget {
+  const MobileOtpPage({super.key, required this.email});
+  final String email;
+
   @override
-  State<OtpVerification> createState() => _OtpVerificationState();
+  Widget build(BuildContext context) => OtpVerification(emailID: email);
 }
 
-class _OtpVerificationState extends State<OtpVerification> {
-  ApiService _apiService = ApiService();
-  String otp = "";
+class OtpVerification extends ConsumerStatefulWidget {
+  const OtpVerification({super.key, required this.emailID});
+  final String emailID;
+
+  @override
+  ConsumerState<OtpVerification> createState() => _OtpVerificationState();
+}
+
+class _OtpVerificationState extends ConsumerState<OtpVerification> {
+  final ApiService _apiService = ApiService();
+  String _otp = '';
+  bool _loading = false;
+
+  Future<void> _verifyOtp() async {
+    if (_otp.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a 6-digit OTP')),
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+
+    try {
+      final data = await _apiService.postOTP(widget.emailID, _otp, context);
+
+      if (data == null) {
+        setState(() => _loading = false);
+        return;
+      }
+
+      final doExist = data['doExist'] as bool? ?? false;
+      final accessToken  = data['accessToken']  as String? ?? '';
+      final refreshToken = data['refreshToken'] as String? ?? '';
+
+      if (doExist) {
+        // Existing user → store user + tokens, go home
+        final user = User.fromJson(data['user'] as Map<String, dynamic>);
+        await ref.read(authProvider.notifier).login(
+          user: user,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        );
+        if (mounted) context.go(AppRoutes.home);
+      } else {
+        // New user → go to onboarding
+        if (mounted) {
+          context.go('${AppRoutes.tellMore}/${Uri.encodeComponent(widget.emailID)}');
+        }
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-        ),
-        body: SingleChildScrollView(
-            child: Container(
-          margin: EdgeInsets.fromLTRB(25.w, 0, 25.w, 0),
-          color: Colors.white,
-          child: Column(
-            children: [
-              SvgPicture.asset(
-                "assets/images/login_svg.svg",
-                height: 270.h,
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // OTPTextField(
-                  //   length: 6,
-                  //   width: 340.w,
-                  //   textFieldAlignment: MainAxisAlignment.spaceBetween,
-                  //   fieldWidth: 45.w,
-                  //   fieldStyle: FieldStyle.box,
-                  //   outlineBorderRadius: 15.r,
-                  //   style: TextStyle(fontSize: 18.sp),
-                  //   onCompleted: (value) {
-                  //
-                  //   },
-                  // ),
-                  // OtpTextField(
-                  //   keyboardType: TextInputType.number,
-                  //   numberOfFields: 6,
-                  //   borderColor: Colors.black,
-                  //   fieldWidth: 50,
-                  //   borderRadius: BorderRadius.circular(0.r),
-                  //   showFieldAsBox: true,
-                  //   //runs when a code is typed in
-                  //   onCodeChanged: (String code) {
-                  //     //handle validation or checks here
-                  //   },
-                  //   //runs when every textfield is filled
-                  //   onSubmit: (String verificationCode) {
-                  //     setState(() {
-                  //       otp = verificationCode;
-                  //     });
-                  //   }, // end onSubmit
-                  // ),
-                  Pinput(
-                    length: 6,
-                    keyboardType: TextInputType.number,
-                    defaultPinTheme: PinTheme(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.grey[200]),
-                        width: 50.w,
-                        height: 45.h,
-                        textStyle: TextStyle(fontSize: 30)),
-                    onCompleted: (value) {
-                      setState(() {
-                        otp = value;
-                      });
-                    },
-                    onSubmitted: (value) {
-                      setState(() {
-                        otp = value;
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    height: 3.h,
-                  ),
-                  Text(
-                    "Enter OTP",
-                    style: TextStyle(fontSize: 15.sp),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 40.h,
-              ),
-              InkWell(
-                onTap: () {
-                  print("verifying otp");
-                },
-                child: InkWell(
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) => UserInformation()),
-                    // );
-                    _apiService.postOTP(widget.emailID, otp, context);
-                  },
-                  child: Container(
-                    height: 50.h,
-                    width: 198.w,
-                    decoration: BoxDecoration(
-                      color: Colors.purple,
-                      borderRadius: BorderRadius.circular(38.r),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Verify OTP",
-                        style: TextStyle(
-                            fontSize: 28.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    ),
+      appBar: AppBar(automaticallyImplyLeading: false),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 25.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 20.h),
+            Text(
+              'Verify OTP',
+              style: theme.textTheme.displaySmall,
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              'Enter the 6-digit code sent to\n${widget.emailID}',
+              style: theme.textTheme.bodyMedium,
+            ),
+            SizedBox(height: 40.h),
+            Center(
+              child: Pinput(
+                length: 6,
+                keyboardType: TextInputType.number,
+                defaultPinTheme: PinTheme(
+                  width: 50.w,
+                  height: 55.h,
+                  textStyle: theme.textTheme.headlineMedium,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: theme.colorScheme.outline),
                   ),
                 ),
+                focusedPinTheme: PinTheme(
+                  width: 50.w,
+                  height: 55.h,
+                  textStyle: theme.textTheme.headlineMedium,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: theme.colorScheme.primary, width: 2),
+                  ),
+                ),
+                onCompleted: (value) {
+                  setState(() => _otp = value);
+                  _verifyOtp();
+                },
+                onChanged: (value) => setState(() => _otp = value),
               ),
-              SizedBox(
-                height: 20.h,
+            ),
+            SizedBox(height: 40.h),
+            SizedBox(
+              width: double.infinity,
+              height: 52.h,
+              child: ElevatedButton(
+                onPressed: _loading ? null : _verifyOtp,
+                child: _loading
+                    ? const SizedBox(
+                        width: 22, height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text('Verify OTP'),
               ),
-              Text(
-                "Didn't Recieve OTP?",
-                style: TextStyle(fontSize: 16.sp),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (context) {
-                          return LoginPage();
-                        }));
-                      },
-                      child: Text(
-                        "CHANGE Email-Id",
-                        style: TextStyle(fontSize: 16.sp),
-                      )),
-                  Text("or"),
-                  TextButton(
-                      onPressed: () async {
-                        if (await _apiService.postEmail(
-                            widget.emailID, context)) {}
-                        ;
-                      },
-                      child: Text(
-                        "RESEND CODE",
-                        style: TextStyle(fontSize: 16.sp),
-                      ))
-                ],
-              ),
-            ],
-          ),
-        )));
+            ),
+            SizedBox(height: 20.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () => context.go(AppRoutes.login),
+                  child: const Text('Change Email'),
+                ),
+                const Text('or'),
+                TextButton(
+                  onPressed: () => _apiService.postEmail(widget.emailID, context),
+                  child: const Text('Resend Code'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
