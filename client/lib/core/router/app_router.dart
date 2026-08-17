@@ -19,6 +19,7 @@ import 'package:papersafe/views/categories.dart';
 import 'package:papersafe/views/settings.dart';
 import 'package:papersafe/views/trash_screen.dart';
 import 'package:papersafe/views/activity_timeline_page.dart';
+import 'package:papersafe/views/maps_page.dart';
 import 'package:papersafe/core/providers/biometric_provider.dart';
 import 'package:papersafe/views/biometric_lock_screen.dart';
 
@@ -41,6 +42,7 @@ class AppRoutes {
   static const search = '/search';
   static const trash = '/trash';
   static const activityTimeline = '/activity-timeline';
+  static const maps = '/maps';
   static const biometricLock = '/biometric-lock';
 }
 
@@ -165,6 +167,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.activityTimeline,
         name: 'activityTimeline',
         builder: (context, state) => const ActivityTimelinePage(),
+      ),
+      GoRoute(
+        path: AppRoutes.maps,
+        name: 'maps',
+        builder: (context, state) => const MapsPage(),
       ),
     ],
   );
