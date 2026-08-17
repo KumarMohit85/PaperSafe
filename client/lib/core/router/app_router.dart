@@ -17,6 +17,8 @@ import 'package:papersafe/views/nearby_sharing_page.dart';
 import 'package:papersafe/views/search_page.dart';
 import 'package:papersafe/views/categories.dart';
 import 'package:papersafe/views/settings.dart';
+import 'package:papersafe/views/trash_screen.dart';
+import 'package:papersafe/views/activity_timeline_page.dart';
 import 'package:papersafe/core/providers/biometric_provider.dart';
 import 'package:papersafe/views/biometric_lock_screen.dart';
 
@@ -38,6 +40,7 @@ class AppRoutes {
   static const nearbyShare = '/nearby-share';
   static const search = '/search';
   static const trash = '/trash';
+  static const activityTimeline = '/activity-timeline';
   static const biometricLock = '/biometric-lock';
 }
 
@@ -152,6 +155,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.nearbyShare,
         name: 'nearbyShare',
         builder: (context, state) => const NearbySharingPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.trash,
+        name: 'trash',
+        builder: (context, state) => const TrashScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.activityTimeline,
+        name: 'activityTimeline',
+        builder: (context, state) => const ActivityTimelinePage(),
       ),
     ],
   );
