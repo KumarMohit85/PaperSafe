@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_connections/nearby_connections.dart';
+import 'package:papersafe/core/services/nearby_service.dart';
 
 /// A premium glass‑morphic card representing a discovered endpoint.
 ///
@@ -8,7 +8,7 @@ import 'package:nearby_connections/nearby_connections.dart';
 /// • Hover / tap elevation animation.
 /// • Highlights when selected.
 class EndpointCard extends StatelessWidget {
-  final Endpoint endpoint;
+  final NearbyDevice endpoint;
   final bool selected;
   final VoidCallback onTap;
 

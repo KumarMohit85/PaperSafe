@@ -39,7 +39,7 @@ class _QRGeneratorPageState extends State<QRGeneratorPage> {
             SizedBox(height: 24.h),
             if (_data.isNotEmpty)
               Center(
-                child: QrImage(
+                child: QrImageView(
                   data: _data,
                   version: QrVersions.auto,
                   size: 200.r,

@@ -11,31 +11,69 @@ class QRScannerPage extends StatefulWidget {
 
 class _QRScannerPageState extends State<QRScannerPage> {
   String? _qrCode;
+  final MobileScannerController _controller = MobileScannerController();
 
   @override
-n  Widget build(BuildContext context) {
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('QR Scanner')),
+      appBar: AppBar(
+        title: const Text('QR Scanner'),
+        backgroundColor: const Color(0xFF1E293B),
+        actions: [
+          IconButton(
+            icon: ValueListenableBuilder(
+              valueListenable: _controller,
+              builder: (context, state, child) {
+                return Icon(
+                  state.torchState == TorchState.on ? Icons.flash_on : Icons.flash_off,
+                  color: Colors.tealAccent,
+                );
+              },
+            ),
+            onPressed: () => _controller.toggleTorch(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.cameraswitch, color: Colors.white),
+            onPressed: () => _controller.switchCamera(),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Expanded(
             child: MobileScanner(
-              allowDuplicates: false,
-              onDetect: (barcode, args) {
-                final String? code = barcode.rawValue;
-                if (code != null && code != _qrCode) {
-                  setState(() => _qrCode = code);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Scanned: $code')),
-                  );
+              controller: _controller,
+              onDetect: (BarcodeCapture capture) {
+                final List<Barcode> barcodes = capture.barcodes;
+                for (final barcode in barcodes) {
+                  final String? code = barcode.rawValue;
+                  if (code != null && code != _qrCode) {
+                    setState(() => _qrCode = code);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Scanned QR Code: $code')),
+                    );
+                    break;
+                  }
                 }
               },
             ),
           ),
           if (_qrCode != null)
-            Padding(
-              padding: EdgeInsets.all(12.r),
-              child: Text('Last scanned: $_qrCode'),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(16.r),
+              color: const Color(0xFF1E293B),
+              child: Text(
+                'Last scanned: $_qrCode',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.tealAccent, fontWeight: FontWeight.bold),
+              ),
             ),
         ],
       ),

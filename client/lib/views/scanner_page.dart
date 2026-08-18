@@ -211,19 +211,21 @@ class _ScannerPageState extends State<ScannerPage> {
                 ],
                 const Text('Extracted Raw Text:', style: TextStyle(color: Colors.white70, fontSize: 13)),
                 const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  maxHeight: 140,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white12),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Text(
-                      data.rawText.isEmpty ? 'No text detected' : data.rawText,
-                      style: const TextStyle(color: Colors.white87, fontSize: 13, height: 1.4),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 140),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white12),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        data.rawText.isEmpty ? 'No text detected' : data.rawText,
+                        style: const TextStyle(color: Color(0xDEFFFFFF), fontSize: 13, height: 1.4),
+                      ),
                     ),
                   ),
                 ),

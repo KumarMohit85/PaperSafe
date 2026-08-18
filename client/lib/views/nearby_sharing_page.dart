@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:nearby_connections/nearby_connections.dart';
 import 'package:papersafe/core/services/nearby_service.dart';
 import 'package:papersafe/Widgets/endpoint_card.dart';
 
@@ -22,7 +20,7 @@ class NearbySharingPage extends ConsumerStatefulWidget {
 class _NearbySharingPageState extends ConsumerState<NearbySharingPage> {
   late final NearbyService _service;
   bool _discoveryOn = false;
-  Endpoint? _selectedEndpoint;
+  NearbyDevice? _selectedEndpoint;
   List<String> _selectedFiles = [];
 
   @override
@@ -34,7 +32,6 @@ class _NearbySharingPageState extends ConsumerState<NearbySharingPage> {
 
   Future<void> _initialize() async {
     await _service.init();
-    await _service.listenForPayloads();
     _service.discoveredEndpoints.listen((_) {
       if (mounted) setState(() {});
     });
@@ -125,7 +122,7 @@ class _NearbySharingPageState extends ConsumerState<NearbySharingPage> {
                   const Text('Discovered Devices', style: TextStyle(color: Colors.white, fontSize: 16)),
                   const SizedBox(height: 8),
                   Expanded(
-                    child: StreamBuilder<Endpoint>(
+                    child: StreamBuilder<NearbyDevice>(
                       stream: _service.discoveredEndpoints,
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
