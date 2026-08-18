@@ -63,7 +63,7 @@ dependencies:
   # Notifications
   flutter_local_notifications: ^17.2.2
   timezone: ^0.9.4
-  workmanager: ^0.5.2
+  workmanager: ^0.10.0
 
   # Search / Database
   sqflite: ^2.3.3+1
@@ -77,7 +77,7 @@ dependencies:
   url_launcher: ^6.3.0
 
   # PDF
-  syncfusion_flutter_pdfviewer: ^26.2.14
+  syncfusion_flutter_pdfviewer: ^27.1.0
 
   # Misc
   archive: ^3.6.1
