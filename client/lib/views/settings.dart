@@ -103,7 +103,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const ManageDocuments(title: "Delete Documents"),
+                      builder: (context) => ManageDocuments(title: "Delete Documents"),
                     ),
                   );
                 },
@@ -135,7 +135,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
               _listButton("Terms & Conditions", Icons.article_outlined, () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const TermsAndConditions()),
+                  MaterialPageRoute(builder: (context) => TermsAndConditions()),
                 );
               }),
 

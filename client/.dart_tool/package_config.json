@@ -746,6 +746,12 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "nearby_connections",
+      "rootUri": "file:///C:/Users/mohit/AppData/Local/Pub/Cache/hosted/pub.dev/nearby_connections-4.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "nm",
       "rootUri": "file:///C:/Users/mohit/AppData/Local/Pub/Cache/hosted/pub.dev/nm-0.5.0",
       "packageUri": "lib/",

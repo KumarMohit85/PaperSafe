@@ -46,11 +46,9 @@ dependencies:
   # AI (Gemini)
   google_generative_ai: ^0.4.6
 
-<<<<<<< HEAD
-  nearby_connections: ^0.3.0,
-=======
+  nearby_connections: ^4.3.0
+
   # QR
->>>>>>> af38e11f220c7ca78ed7a1ca18db4fe4150913d1
   mobile_scanner: ^5.2.3
   qr_flutter: ^4.1.0
 
