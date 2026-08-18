@@ -13,11 +13,11 @@ class EndpointCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const EndpointCard({
-    Key? key,
+    super.key,
     required this.endpoint,
     required this.onTap,
     this.selected = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
