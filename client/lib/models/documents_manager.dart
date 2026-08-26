@@ -8,8 +8,10 @@ import 'package:papersafe/models/user.dart';
 import 'package:papersafe/models/user_manager.dart';
 import 'package:papersafe/views/your_documents.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DocumentManager {
   static final DocumentManager _instance = DocumentManager._internal();
@@ -19,13 +21,21 @@ class DocumentManager {
   }
 
   DocumentManager._internal();
+
+  final ApiService _apiService = ApiService();
+
   Map<String, Uint8List?> documents = {};
   Map<String, List<File>?> movieTickets = {};
+
   List<ImageModel?> allImages = [];
   List<ImageModel?> identityImages = [];
   List<ImageModel?> educationImages = [];
-  ApiService _apiService = ApiService();
   getImagesfromZip _getZipImages = getImagesfromZip();
+
+  void reset() {
+    documents.clear();
+    movieTickets.clear();
+  }
 
   void initialize() async {
     User? user = await UserManager().getUser();
@@ -39,7 +49,9 @@ class DocumentManager {
     identityImages = [];
     educationImages = [];
 
-    if (user != null) {
+    if (ApiService.useMockBackend) {
+      await loadMockAssets();
+    } else if (user != null) {
       await downloadAllDocuments(user.id!);
       await populateAllImages();
     } else {
@@ -47,7 +59,133 @@ class DocumentManager {
     }
   }
 
+  Future<void> loadMockAssets() async {
+    try {
+      print("Loading mock assets in DocumentManager");
+      final prefs = await SharedPreferences.getInstance();
+
+      // 1. Aadhaar
+      final aadhaarPath = prefs.getString('mock_persist_aadhaar');
+      if (aadhaarPath != null && await File(aadhaarPath).exists()) {
+        documents["aadhaar"] = await File(aadhaarPath).readAsBytes();
+      } else {
+        final aadharData = await rootBundle.load('assets/images/aadhar_card_dummy.png');
+        documents["aadhaar"] = aadharData.buffer.asUint8List();
+      }
+
+      // 2. PAN
+      final panPath = prefs.getString('mock_persist_pan');
+      if (panPath != null && await File(panPath).exists()) {
+        documents["pan"] = await File(panPath).readAsBytes();
+      } else {
+        final panData = await rootBundle.load('assets/images/indian_flag.png');
+        documents["pan"] = panData.buffer.asUint8List();
+      }
+
+      // 3. Marksheets
+      final xPath = prefs.getString('mock_persist_xMarkSheet');
+      if (xPath != null && await File(xPath).exists()) {
+        documents["xMarkSheet"] = await File(xPath).readAsBytes();
+      } else {
+        final marksheetData = await rootBundle.load('assets/images/marksheet.png');
+        documents["xMarkSheet"] = marksheetData.buffer.asUint8List();
+      }
+
+      final xiiPath = prefs.getString('mock_persist_xiiMarkSheet');
+      if (xiiPath != null && await File(xiiPath).exists()) {
+        documents["xiiMarkSheet"] = await File(xiiPath).readAsBytes();
+      } else {
+        final marksheetData = await rootBundle.load('assets/images/marksheet.png');
+        documents["xiiMarkSheet"] = marksheetData.buffer.asUint8List();
+      }
+
+      // 4. Movie Tickets
+      final ticketPaths = prefs.getStringList('mock_persist_movieTickets') ?? [];
+      final List<File> filesList = [];
+      for (final path in ticketPaths) {
+        final f = File(path);
+        if (await f.exists()) {
+          filesList.add(f);
+        }
+      }
+      if (filesList.isNotEmpty) {
+        movieTickets["tickets"] = filesList;
+      } else {
+        final movieTicketData = await rootBundle.load('assets/images/movie_ticket.png');
+        final tempDir = await getTemporaryDirectory();
+        final movieFile = File('${tempDir.path}/mock_movie_ticket.png');
+        await movieFile.writeAsBytes(movieTicketData.buffer.asUint8List());
+        movieTickets["tickets"] = [movieFile];
+      }
+
+      await populateAllImages();
+    } catch (e) {
+      print("Error loading mock assets: $e");
+    }
+  }
+
+  Future<void> persistMockUpload(String docType, File file) async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final prefs = await SharedPreferences.getInstance();
+
+      if (docType == 'movieTicket') {
+        final persistentFile = File('${appDir.path}/mock_ticket_${DateTime.now().millisecondsSinceEpoch}.png');
+        await persistentFile.writeAsBytes(await file.readAsBytes());
+
+        final currentPaths = prefs.getStringList('mock_persist_movieTickets') ?? [];
+        currentPaths.add(persistentFile.path);
+        await prefs.setStringList('mock_persist_movieTickets', currentPaths);
+
+        movieTickets['tickets'] ??= [];
+        movieTickets['tickets']!.add(persistentFile);
+      } else {
+        final persistentFile = File('${appDir.path}/mock_${docType}.png');
+        await persistentFile.writeAsBytes(await file.readAsBytes());
+        await prefs.setString('mock_persist_${docType}', persistentFile.path);
+
+        documents[docType] = await persistentFile.readAsBytes();
+      }
+      await populateAllImages();
+    } catch (e) {
+      print("Error persisting mock upload: $e");
+    }
+  }
+
+  Future<void> deleteMockPersist(String card) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      if (card == 'MovieTicket' || card == 'MovieTicket1' || card == 'MovieTicket2' || card == 'MovieTicket3') {
+        final ticketPaths = prefs.getStringList('mock_persist_movieTickets') ?? [];
+        for (final path in ticketPaths) {
+          final f = File(path);
+          if (await f.exists()) await f.delete();
+        }
+        await prefs.remove('mock_persist_movieTickets');
+        movieTickets.clear();
+      } else {
+        final keyName = card.toLowerCase();
+        final prefKey = 'mock_persist_$keyName';
+        final path = prefs.getString(prefKey);
+        if (path != null) {
+          final f = File(path);
+          if (await f.exists()) await f.delete();
+          await prefs.remove(prefKey);
+        }
+        documents.remove(keyName);
+      }
+      await populateAllImages();
+    } catch (e) {
+      print("Error deleting mock persistent storage: $e");
+    }
+  }
+
   void refreshDocuments(documentType docType) {
+    if (ApiService.useMockBackend) {
+      populateAllImages();
+      return;
+    }
     UserManager.instance.userStream.listen((user) async {
       switch (docType) {
         case documentType.Aadhaar:

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:papersafe/core/theme/app_colors.dart';
 import 'package:papersafe/core/theme/app_theme.dart';
 import 'package:papersafe/core/router/app_router.dart';
 import 'package:papersafe/core/widgets/glassmorphism.dart';
 import 'package:papersafe/Widgets/document_card.dart';
+import 'package:papersafe/views/view_documents.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -78,16 +80,38 @@ class HomePage extends StatelessWidget {
               onTap: () {
                 switch (doc["type"]) {
                   case documentType.Scanner:
-                    Navigator.of(context).pushNamed(AppRoutes.scanner);
+                    context.push(AppRoutes.scanner);
                     break;
                   case documentType.AIAssistant:
-                    Navigator.of(context).pushNamed(AppRoutes.aiChat);
+                    context.push(AppRoutes.aiChat);
                     break;
                   case documentType.QR:
-                    Navigator.of(context).pushNamed(AppRoutes.qrScanner);
+                    context.push(AppRoutes.qrScanner);
                     break;
                   case documentType.Nearby:
-                    Navigator.of(context).pushNamed(AppRoutes.nearbyShare);
+                    context.push(AppRoutes.nearbyShare);
+                    break;
+                  case documentType.Aadhaar:
+                  case documentType.PAN:
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ViewDocuments(
+                          documentCategory: DocumentCategory.identity,
+                          title: "Identity Documents",
+                        ),
+                      ),
+                    );
+                    break;
+                  case documentType.MovieTicket:
+                  case documentType.TrainTicket:
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ViewDocuments(
+                          documentCategory: DocumentCategory.all,
+                          title: "All Documents",
+                        ),
+                      ),
+                    );
                     break;
                   default:
                     break;

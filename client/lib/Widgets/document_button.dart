@@ -19,6 +19,7 @@ class _DocumentButtonState extends State<DocumentButton> {
   @override
   void initState() {
     super.initState();
+    _fetchDocuments();
     _startFetchingDocuments();
   }
 
@@ -29,7 +30,7 @@ class _DocumentButtonState extends State<DocumentButton> {
   }
 
   void _startFetchingDocuments() {
-    _timer = Timer.periodic(Duration(microseconds: 100), (timer) async {
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
       await _fetchDocuments();
       if (list.isNotEmpty) {
         timer.cancel();
@@ -38,17 +39,19 @@ class _DocumentButtonState extends State<DocumentButton> {
   }
 
   Future<void> _fetchDocuments() async {
-    list = DocumentManager().allImages;
-    setState(() {});
+    final docs = DocumentManager().allImages;
+    if (docs.isNotEmpty) {
+      setState(() {
+        list = docs;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return list.isNotEmpty
-        ? _getCustomButton(Icons.pageview_outlined, "View All Documents",
-            () async {
+        ? _getCustomButton(Icons.pageview_outlined, "View All Documents", () async {
             print("all images list length = ${list.length}");
-
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {
@@ -60,68 +63,70 @@ class _DocumentButtonState extends State<DocumentButton> {
               ),
             );
           }, false)
-        // ? ElevatedButton(
-        //     onPressed: () async {
-        //       print("all images list length = ${list.length}");
-
-        //       Navigator.of(context).push(
-        //         MaterialPageRoute(
-        //           builder: (context) {
-        //             return ViewDocuments(
-        //               list: list,
-        //               title: "All Documents",
-        //             );
-        //           },
-        //         ),
-        //       );
-        //     },
-        //     child: const Text("View all Documents"),
-        //   )
-
         : _getCustomButton(null, "Downloading documents", () {}, true);
   }
 
   Widget _getCustomButton(
       IconData? icon, String text, VoidCallback func, bool isLoading) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return InkWell(
-      // onTap: () {
-      //   _askSource(doc);
-      // },
-      onTap: func,
+      onTap: isLoading ? null : func,
+      borderRadius: BorderRadius.circular(24.r),
       child: Container(
-        height: 45.h,
+        height: 48.h,
         width: double.infinity,
         decoration: BoxDecoration(
-            color: isLoading
-                ? Color.fromARGB(255, 241, 228, 238)
-                : Color.fromARGB(255, 227, 130, 244),
-            borderRadius: BorderRadius.circular(30.r),
-            border: Border.all(
-                width: 2.5.sp,
-                color: isLoading
-                    ? Color.fromARGB(255, 231, 167, 243)
-                    : Color.fromARGB(255, 113, 8, 122))),
+          gradient: isLoading
+              ? null
+              : const LinearGradient(
+                  colors: [Color(0xFF6C3DE3), Color(0xFF3D7BE3)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+          color: isLoading
+              ? (isDark ? Colors.white12 : Colors.grey.shade200)
+              : null,
+          borderRadius: BorderRadius.circular(24.r),
+          boxShadow: isLoading
+              ? null
+              : [
+                  BoxShadow(
+                    color: const Color(0xFF6C3DE3).withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  )
+                ],
+        ),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0.h, vertical: 4.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              isLoading
-                  ? CircularProgressIndicator(
-                      color: Colors.grey,
-                    )
-                  : Icon(icon),
+              if (isLoading)
+                SizedBox(
+                  width: 20.r,
+                  height: 20.r,
+                  child: CircularProgressIndicator(
+                    color: isDark ? Colors.white54 : Colors.grey,
+                    strokeWidth: 2.5,
+                  ),
+                )
+              else if (icon != null)
+                Icon(icon, color: Colors.white, size: 22.sp),
               SizedBox(
                 width: 10.w,
               ),
               Text(
                 text,
                 style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w500,
-                    color: isLoading ? Colors.grey : ColorManager().primary),
-              ),
-              SizedBox(
-                height: 30.w,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: isLoading
+                      ? (isDark ? Colors.white38 : Colors.grey.shade500)
+                      : Colors.white,
+                ),
               ),
             ],
           ),

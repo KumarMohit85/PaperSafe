@@ -1,10 +1,15 @@
+import 'dart:ui';
 import 'package:papersafe/api_services/api_services.dart';
 import 'package:papersafe/views/mobile_otp.dart';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+// Design constants
+const _kBg = Color(0xFF0D1424);
+const _kSurface = Color(0xFF131D30);
+const _kAccent = Color(0xFF4361EE);
+const _kCircle = Color(0xFF1A2D4A);
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,246 +20,284 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
-  bool agree = false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
+  final ApiService _apiService = ApiService();
 
-  ApiService _apiService = ApiService();
   @override
   void dispose() {
-    agree = false;
     _emailController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.fromLTRB(25.w, 0, 25.w, 0),
-          color: Colors.white,
-          child: Column(
-            children: [
-              Text(
-                "LOGIN OR SIGNUP",
-                style: TextStyle(
-                    fontSize: 38.sp, fontWeight: FontWeight.w700, height: 1.h),
-                softWrap: true,
-              ),
-              SizedBox(
-                height: 70.h,
-              ),
-              Container(
-                  height: 123.h,
-                  width: 125.w,
-                  // color: Colors.purple[400],
-                  child: Image.asset(
-                    "assets/PaperSafeLogos/fill_inside_logo.png",
-                    //color: Colors.purple,
-                  )),
-              SizedBox(
-                height: 55.h,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                      padding: EdgeInsets.all(8.sp),
-                      child: Form(
-                        key: _formKey,
-                        child: TextFormField(
-                          controller: _emailController,
-                          validator: _validateEmail,
-                          style: TextStyle(fontSize: 15, letterSpacing: 1.2.w),
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              prefixIcon: Icon(Icons.mail),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(25.r),
-                                  borderSide: BorderSide(
-                                      width: 0, color: Colors.grey[200]!)),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(25.r),
-                                  borderSide: BorderSide(
-                                      width: 0, color: Colors.grey[200]!)),
-                              hintText: "Enter your e-mail address",
-                              hintStyle: TextStyle(
-                                  fontSize: 14,
-                                  fontStyle: FontStyle.italic,
-                                  letterSpacing: 1.w)),
-                        ),
-                      )),
-                  SizedBox(
-                    height: 3.h,
-                  ),
-                  Text(
-                    "Email ID",
-                    style: TextStyle(fontSize: 15.sp),
-                  ),
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      agree
-                          ? InkWell(
-                              onTap: () => alterAgree(),
-                              child: Icon(Icons.check_box))
-                          : InkWell(
-                              onTap: () => alterAgree(),
-                              child: Icon(
-                                Icons.check_box_outline_blank,
-                                color: Colors.purple,
-                              )),
-                      SizedBox(
-                        height: 100.h,
-                        width: 252.w,
-                        child: Text(
-                          "I Agree to Papersafe's Privacy and policy and Terms & conditions",
-                          style: TextStyle(fontSize: 13.sp, height: 1.h),
-                          softWrap: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              // ElevatedButton(
-              //   onPressed: () {},
-              //   child: Text(
-              //     "Next",
-              //     style: TextStyle(
-              //         color: Colors.white, fontWeight: FontWeight.w600),
-              //   ),
-              //   style: ElevatedButton.styleFrom(
-              //       backgroundColor: Colors.purple,
-              //       padding: EdgeInsets.symmetric(horizontal: 44, vertical: 14),
-              //       textStyle: TextStyle(
-              //         fontSize: 25,
-              //       )),
-              // )
-              InkWell(
-                onTap: () {
-                  _submit(_emailController.text);
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => OtpVerification()),
-                  // );
-                },
-                child: Container(
-                  height: 40.h,
-                  width: 162.w,
-                  decoration: BoxDecoration(
-                    color: Colors.purple,
-                    borderRadius: BorderRadius.circular(38.r),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Next",
-                      style: TextStyle(
-                          fontSize: 28.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
+      child: Scaffold(
+        backgroundColor: _kBg,
+        body: Stack(
+          children: [
+            // Decorative blurred circle — top right
+            Positioned(
+              top: -60,
+              right: -60,
+              child: Container(
+                width: 220,
+                height: 220,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _kCircle.withOpacity(0.8),
                 ),
               ),
-              SizedBox(
-                height: 20.h,
+            ),
+            // Decorative blurred circle — bottom left
+            Positioned(
+              bottom: 80,
+              left: -80,
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _kCircle.withOpacity(0.6),
+                ),
               ),
+            ),
 
-              _isLoading
-                  ? CircularProgressIndicator()
-                  : Container(), // Show loading indica
-            ],
-          ),
+            // Main content
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 40.h),
+
+                    // Shield icon in rounded square
+                    Center(
+                      child: Container(
+                        width: 72.w,
+                        height: 72.w,
+                        decoration: BoxDecoration(
+                          color: _kSurface,
+                          borderRadius: BorderRadius.circular(20.r),
+                          border: Border.all(color: Colors.white10),
+                        ),
+                        child: Icon(
+                          Icons.shield_outlined,
+                          color: _kAccent,
+                          size: 34.sp,
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 20.h),
+
+                    // App name & subtitle
+                    Center(
+                      child: Text(
+                        'PaperSafe',
+                        style: TextStyle(
+                          fontSize: 28.sp,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        'Your private document vault',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: const Color(0xFF8B9ABB),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 40.h),
+
+                    // Welcome heading
+                    Text(
+                      'Welcome back',
+                      style: TextStyle(
+                        fontSize: 24.sp,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      "Enter your email to sign in or create an account. We'll send you a one-time code to verify it's you.",
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: const Color(0xFF8B9ABB),
+                        height: 1.5,
+                      ),
+                    ),
+
+                    SizedBox(height: 28.h),
+
+                    // Email label
+                    Text(
+                      'Email address',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+
+                    // Email input
+                    Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        controller: _emailController,
+                        validator: _validateEmail,
+                        keyboardType: TextInputType.emailAddress,
+                        style: TextStyle(fontSize: 15.sp, color: Colors.white),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: _kSurface,
+                          prefixIcon: const Icon(
+                            Icons.mail_outline_rounded,
+                            color: Color(0xFF8B9ABB),
+                          ),
+                          hintText: 'you@example.com',
+                          hintStyle: const TextStyle(color: Color(0xFF4A5568)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            borderSide: const BorderSide(color: Colors.white12),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            borderSide: const BorderSide(color: Colors.white12),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            borderSide: const BorderSide(color: _kAccent, width: 1.5),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 20.h),
+
+                    // Continue button
+                    _isLoading
+                        ? const Center(child: CircularProgressIndicator(color: _kAccent))
+                        : SizedBox(
+                            width: double.infinity,
+                            height: 52.h,
+                            child: ElevatedButton(
+                              onPressed: () => _submit(_emailController.text),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _kAccent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Continue',
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.arrow_forward, color: Colors.white, size: 18),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                    SizedBox(height: 32.h),
+
+                    // Info card
+                    Container(
+                      padding: EdgeInsets.all(16.r),
+                      decoration: BoxDecoration(
+                        color: _kSurface,
+                        borderRadius: BorderRadius.circular(14.r),
+                        border: Border.all(color: Colors.white10),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 36.w,
+                            height: 36.w,
+                            decoration: BoxDecoration(
+                              color: _kAccent.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: const Icon(Icons.shield_outlined, color: _kAccent, size: 18),
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: Text(
+                              'Your email stays on your device. No cloud, no tracking.',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: const Color(0xFF8B9ABB),
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  //submit email and request otp
   void _submit(String emailID) async {
-    if (agree) {
-      setState(() {
-        _isLoading = true;
-      });
-      var _isValid = _formKey.currentState?.validate();
-      if (_isValid ?? false) {
-        bool success = await _fetchOTP();
-        if (success) {
-          _goNext(emailID);
-        } else {
-          // Restart the same page
-          Navigator.of(context).pop();
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) =>
-                LoginPage(), // Replace 'YourPage' with the actual name of your page
-          ));
-        }
-        success ? _goNext(emailID) : null;
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Invalid details, fill again")));
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final success = await _apiService.postEmail(emailID, context);
+      if (success == true && mounted) {
+        _goNext(emailID);
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Please agree to our policies")));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  _goNext(String emailID) {
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
-      return OtpVerification(
-        emailID: emailID,
-      );
+  void _goNext(String emailID) {
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
+      return OtpVerification(emailID: emailID);
     }));
   }
 
-  // Function to validate email
   String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your email';
-    }
-    final emailRegex =
-        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-    if (!emailRegex.hasMatch(value)) {
-      return 'Please enter a valid email address';
-    }
+    if (value == null || value.isEmpty) return 'Please enter your email';
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    if (!emailRegex.hasMatch(value)) return 'Please enter a valid email address';
     return null;
-  }
-
-  void alterAgree() {
-    print("alter agree called");
-    if (agree) {
-      setState(() {
-        agree = false;
-      });
-    } else {
-      setState(() {
-        agree = true;
-      });
-    }
-  }
-
-  _fetchOTP() async {
-    try {
-      return await _apiService.postEmail(_emailController.text, context);
-    } catch (e) {
-      print("there is a error ${e.toString()}");
-      return false;
-    }
   }
 }

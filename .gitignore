@@ -1,0 +1,42 @@
+# ──────────────────────────────────────────────
+# PaperSafe – Root .gitignore
+# ──────────────────────────────────────────────
+
+# Flutter / Dart build outputs
+client/build/
+client/.dart_tool/
+client/.flutter-plugins
+client/.flutter-plugins-dependencies
+client/pubspec.lock
+
+# Android generated files
+client/android/.gradle/
+client/android/local.properties
+client/android/key.properties
+client/android/app/debug.keystore
+
+# iOS generated files
+client/ios/.symlinks/
+client/ios/Pods/
+client/ios/Runner.xcworkspace/
+client/ios/Flutter/Generated.xcconfig
+client/ios/Flutter/flutter_export_environment.sh
+
+# macOS, Linux, Windows build outputs
+client/macos/
+client/linux/
+client/windows/
+
+# Node.js
+server/node_modules/
+server/.env
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+
+# IDE
+.idea/
+.vscode/
+*.iml

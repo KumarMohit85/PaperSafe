@@ -28,4 +28,4 @@ final biometricEnabledProvider =
 });
 
 /// Indicates whether the app is currently locked behind biometric security.
-final isAppLockedProvider = StateProvider<bool>((ref) => false);
+final isAppLockedProvider = StateProvider<bool>((ref) => true);

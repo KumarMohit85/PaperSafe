@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:papersafe/models/user.dart';
 import 'package:papersafe/core/services/secure_storage_service.dart';
+import 'package:papersafe/models/documents_manager.dart';
 
 class ApiService {
   static const String _baseUrl = 'https://papersafe.onrender.com';
+  static const bool useMockBackend = true;
 
   late final Dio _dio;
 
@@ -73,6 +75,10 @@ class ApiService {
 
   /// Request OTP for given email
   Future<bool> postEmail(String email, BuildContext context) async {
+    if (useMockBackend) {
+      _showSnack(context, 'OTP sent successfully (Mock) ✅');
+      return true;
+    }
     try {
       final response = await _dio.post(
         '/api/v1/requestOTP',
@@ -96,6 +102,25 @@ class ApiService {
     String otp,
     BuildContext context,
   ) async {
+    if (useMockBackend) {
+      final isNewUser = email.toLowerCase() == 'new@example.com';
+      return {
+        'doExist': !isNewUser,
+        'accessToken': 'mock_access_token',
+        'refreshToken': 'mock_refresh_token',
+        'user': {
+          '_id': 'mock_user_123',
+          'schemaVersion': 1,
+          'firstName': 'John',
+          'lastName': 'Doe',
+          'mobileNumber': 9876543210,
+          'emailID': email,
+          'dob': '1995-06-15T00:00:00.000Z',
+          'gender': 'Male',
+          'uniqueID': 'MOCK-UID-9999',
+        }
+      };
+    }
     try {
       final response = await _dio.post(
         '/api/v1/verifyOTP',
@@ -122,6 +147,25 @@ class ApiService {
     required String dob,
     required BuildContext context,
   }) async {
+    if (useMockBackend) {
+      _showSnack(context, 'Welcome to PaperSafe! (Mock) 🎉');
+      return {
+        'doExist': true,
+        'accessToken': 'mock_access_token',
+        'refreshToken': 'mock_refresh_token',
+        'user': {
+          '_id': 'mock_user_123',
+          'schemaVersion': 1,
+          'firstName': firstName,
+          'lastName': lastName,
+          'mobileNumber': int.tryParse(mobNo) ?? 9876543210,
+          'emailID': emailId,
+          'dob': dob,
+          'gender': gender,
+          'uniqueID': 'MOCK-UID-9999',
+        }
+      };
+    }
     try {
       final response = await _dio.post(
         '/api/v1/register',
@@ -156,6 +200,20 @@ class ApiService {
     Map<String, dynamic> updatedData,
     BuildContext context,
   ) async {
+    if (useMockBackend) {
+      _showSnack(context, 'Profile updated successfully (Mock)');
+      return User.fromJson({
+        '_id': userId,
+        'schemaVersion': 1,
+        'firstName': updatedData['firstName'] ?? 'John',
+        'lastName': updatedData['lastName'] ?? 'Doe',
+        'mobileNumber': int.tryParse(updatedData['mobileNumber']?.toString() ?? '') ?? 9876543210,
+        'emailID': updatedData['emailID'] ?? 'demo@example.com',
+        'dob': updatedData['dob'] ?? '1995-06-15T00:00:00.000Z',
+        'gender': updatedData['gender'] ?? 'Male',
+        'uniqueID': 'MOCK-UID-9999',
+      });
+    }
     try {
       final response = await _dio.patch(
         '/api/v1/updateUser/$userId',
@@ -175,6 +233,10 @@ class ApiService {
 
   /// Delete user (requires JWT)
   Future<bool> deleteUser(String userId, BuildContext context) async {
+    if (useMockBackend) {
+      _showSnack(context, 'Account deleted (Mock)');
+      return true;
+    }
     try {
       final response = await _dio.delete('/api/v1/deleteUser/$userId');
       if (response.statusCode == 200) {
@@ -252,6 +314,14 @@ class ApiService {
         successMsg: 'Movie ticket uploaded',
       );
 
+  String? _endpointToDoctype(String endpoint) {
+    if (endpoint.contains('uploadAadhaar')) return 'aadhaar';
+    if (endpoint.contains('uploadPAN')) return 'pan';
+    if (endpoint.contains('uploadXIIMarkSheet')) return 'xiiMarkSheet';
+    if (endpoint.contains('uploadXMarkSheet')) return 'xMarkSheet';
+    return null;
+  }
+
   Future<bool> _uploadSingleFile({
     required String endpoint,
     required String fieldName,
@@ -260,6 +330,22 @@ class ApiService {
     required BuildContext context,
     required String successMsg,
   }) async {
+    if (useMockBackend) {
+      _showSnack(context, '$successMsg (Mock)');
+      try {
+        if (endpoint.contains('uploadMovieTicket')) {
+          await DocumentManager().persistMockUpload('movieTicket', file);
+        } else {
+          final docType = _endpointToDoctype(endpoint);
+          if (docType != null) {
+            await DocumentManager().persistMockUpload(docType, file);
+          }
+        }
+      } catch (e) {
+        debugPrint('Local mock upload save error: $e');
+      }
+      return true;
+    }
     try {
       final fileName = file.path.split('/').last;
       final formData = FormData.fromMap({
@@ -291,6 +377,9 @@ class ApiService {
   /// Downloads an image document as bytes.
   /// [card] is one of: Aadhaar, PAN, XIIMarkSheet, XMarkSheet
   Future<Uint8List?> fetchImageData(String userId, String card) async {
+    if (useMockBackend) {
+      return null; // Local assets loaded via DocumentManager directly
+    }
     try {
       final response = await _dio.get(
         '/api/v1/download$card/$userId',
@@ -308,6 +397,9 @@ class ApiService {
 
   /// Downloads a zip of movie tickets, saves to temp dir, returns File.
   Future<File?> downloadMovieTicketZip(String userId) async {
+    if (useMockBackend) {
+      return null;
+    }
     try {
       final tempDir = await getTemporaryDirectory();
       final zipPath = '${tempDir.path}/tickets_$userId.zip';
@@ -329,6 +421,10 @@ class ApiService {
   // ─────────────────────────────────────────────────────────────────────────
 
   Future<bool> deleteImage(String userId, String card) async {
+    if (useMockBackend) {
+      await DocumentManager().deleteMockPersist(card);
+      return true;
+    }
     try {
       final response = await _dio.delete('/api/v1/delete$card/$userId');
       return response.statusCode == 200;
